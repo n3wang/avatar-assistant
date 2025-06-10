@@ -1,5 +1,6 @@
 import pygame
 from character_animation import CharacterAnimation
+from constants import WIDTH, HEIGHT, FROM_CENTER
 
 class AvatarManager:
     def __init__(self):
@@ -8,11 +9,45 @@ class AvatarManager:
             'idle': CharacterAnimation('idle', 100, scale=0.5),
         }
         self.current_state = 'idle'
-        self.faces = [
-            {"name": "front", "direction": "front", "pos": (400, 100), "angle": 0},
-            {"name": "back", "direction": "back", "pos": (400, 500), "angle": 180},
-            {"name": "left", "direction": "left", "pos": (100, 300), "angle": 90},
-            {"name": "right", "direction": "right", "pos": (700, 300), "angle": -90}
+        
+        # Calculate center and positions
+        width=WIDTH
+        height=HEIGHT
+        distance_from_center = FROM_CENTER
+        self.center_x = width // 2
+        self.center_y = height // 2
+        self.distance = distance_from_center
+        
+        # Configure faces with dynamic positioning
+        self.faces = self._configure_faces()
+
+    def _configure_faces(self):
+        """Generate face positions based on distance from center"""
+        return [
+            {
+                "name": "front",
+                "direction": "front",
+                "pos": (self.center_x, self.center_y - self.distance),
+                "angle": 0
+            },
+            {
+                "name": "back",
+                "direction": "back",
+                "pos": (self.center_x, self.center_y + self.distance),
+                "angle": 180
+            },
+            {
+                "name": "left",
+                "direction": "left",
+                "pos": (self.center_x - self.distance, self.center_y),
+                "angle": 90
+            },
+            {
+                "name": "right",
+                "direction": "right",
+                "pos": (self.center_x + self.distance, self.center_y),
+                "angle": -90
+            }
         ]
 
     def set_state(self, state):

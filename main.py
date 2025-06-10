@@ -3,11 +3,11 @@ import sys
 from avatar_manager import AvatarManager
 from speech_manager import SpeechManager
 from web_server import create_web_server
+from constants import WIDTH, HEIGHT
 
 def main():
     # Initialize pygame
     pygame.init()
-    WIDTH, HEIGHT = 800, 600
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("3D Holographic Avatar")
     

@@ -8,7 +8,7 @@ import pygame.mixer
 class SpeechManager:
     def __init__(self, avatar_manager):
         self.avatar_manager = avatar_manager
-        self.Wmessage_queue = queue.Queue()
+        self.message_queue = queue.Queue()
         self.is_speaking = False
         pygame.mixer.init()  # Initialize mixer once
 
@@ -22,8 +22,8 @@ class SpeechManager:
             
             # Play audio
             sound = pygame.mixer.Sound(temp_file)
-            self.is_speaking = True
             sound.play()
+            self.is_speaking = True
             
             # Wait for playback to complete
             while pygame.mixer.get_busy():
