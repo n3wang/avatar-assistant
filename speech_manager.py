@@ -16,7 +16,7 @@ class SpeechManager:
         """Worker thread for TTS processing"""
         try:
             # Generate speech
-            tts = gTTS(text=text, lang="en")
+            tts = gTTS(text=text, lang="es")
             temp_file = f"tts_{time.time()}.mp3"
             tts.save(temp_file)
             
