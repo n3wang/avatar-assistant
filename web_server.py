@@ -4,7 +4,7 @@ from speech_manager import SpeechManager
 
 app = Flask(__name__)
 
-def create_web_server(speech_manager: SpeechManager, port=5000):
+def create_web_server(speech_manager: SpeechManager, port=5001):
     @app.route("/post-message", methods=["POST"])
     def post_msg():
         data = request.get_json(silent=True) or {}
@@ -14,6 +14,6 @@ def create_web_server(speech_manager: SpeechManager, port=5000):
         return jsonify(status="queued")
     
     threading.Thread(
-        target=lambda: app.run(port=port),
+        target=lambda: app.run(port=port, host="0.0.0.0"),
         daemon=True
     ).start()

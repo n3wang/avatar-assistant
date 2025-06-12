@@ -3,13 +3,10 @@ from character_animation import CharacterAnimation
 from constants import WIDTH, HEIGHT, FROM_CENTER
 
 class AvatarManager:
-    def __init__(self, character_name="neeko", frames_count=4, scale=0.5, is_front_only=True,
-                 speed_talking=50, speed_idle=100):
+    def __init__(self, character_name="niko"):
         self.states = {
-            'idle': CharacterAnimation('idle', speed_idle, scale=scale, character_name=character_name,
-                                       is_front_only=is_front_only, frame_count=frames_count),
-            'talking': CharacterAnimation('talking', speed_talking, scale=scale, character_name=character_name, 
-                                          is_front_only=is_front_only, frame_count=frames_count),
+            'talking': CharacterAnimation('talking', 50, scale=0.5),
+            'idle': CharacterAnimation('idle', 100, scale=0.5),
         }
         self.current_state = 'idle'
         

@@ -12,7 +12,11 @@ def main():
     pygame.display.set_caption("3D Holographic Avatar")
     
     # Create managers
-    avatar_manager = AvatarManager()
+    # avatar_manager = AvatarManager()
+    avatar_manager = AvatarManager(character_name="monopoly_face", frames_count=10, scale=.3,
+                                   is_front_only=True, speed_talking=70, speed_idle=100)
+    
+    
     speech_manager = SpeechManager(avatar_manager)
     create_web_server(speech_manager)
     

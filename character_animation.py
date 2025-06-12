@@ -2,28 +2,38 @@ import sys
 import pygame
 
 class CharacterAnimation:
-    def __init__(self, asset_name, playback_speed, frame_count=4, scale=1.0):
+    def __init__(self, asset_name, playback_speed, frame_count=4, scale=1.0, character_name="", is_front_only=True):
         """Initialize animation sequences for all directions"""
         self.asset_name = asset_name
         self.playback_speed = playback_speed
         self.frame_count = frame_count
+        self.character_name = character_name
         self.scale = scale
         self.current_frame = 0
         self.last_update = 0
         
         # Load animation sequences
-        self.front = self._load_sequence("front")
-        self.back = self._load_sequence("back")
-        self.left = self._load_sequence("left")
-        self.right = self._load_sequence("right")
+        if is_front_only:
+            self.front = self._load_sequence("front")
+            self.back = self._load_sequence("front")
+            self.left = self._load_sequence("front")
+            self.right = self._load_sequence("front")
+        else:
+            self.front = self._load_sequence("front")
+            self.back = self._load_sequence("back")
+            self.left = self._load_sequence("left")
+            self.right = self._load_sequence("right")
     
     def _load_sequence(self, direction):
         """Load and scale animation frames for a direction"""
         frames = []
         for i in range(self.frame_count):
             try:
+                assets_path = f"assets/{self.asset_name}/{direction}/{self.asset_name}{i+1}.png"
+                if self.character_name:
+                    assets_path = f"assets/{self.character_name}/{self.asset_name}/{direction}/{self.asset_name}{i+1}.png"
                 img = pygame.image.load(
-                    f"assets/{self.asset_name}/{direction}/{self.asset_name}{i+1}.png"
+                    assets_path
                 ).convert_alpha()
                 if self.scale != 1.0:
                     size = (int(img.get_width() * self.scale), 
