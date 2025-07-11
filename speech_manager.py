@@ -102,7 +102,7 @@ class SpeechManager:
         """后台线程：生成单个 MP3 并放入缓冲区"""
         try:
             path = f"tts_{idx}.mp3"
-            gTTS(text=text, lang="es", tld="us").save(path)
+            gTTS(text=text, lang="en", tld="us").save(path)
             with self._ready_lock:
                 self._ready_mp3[idx] = path
         except Exception as e:
