@@ -1,3 +1,4 @@
+pydub
 pygame
 websockets
 gTTS

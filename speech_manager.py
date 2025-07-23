@@ -4,6 +4,7 @@ import time
 import os
 from gtts import gTTS
 import pygame.mixer
+from pydub import AudioSegment
 
 
 class SpeechManager:
@@ -78,10 +79,15 @@ class SpeechManager:
         """把整段文本切块、并行生成 MP3，并重置播放管线"""
         # 拆块
         words = text.split()
-        chunks = [
-            " ".join(words[i:i + self.chunk_size])
-            for i in range(0, len(words), self.chunk_size)
-        ]
+        chunks = []
+        i = 0
+        size = 1
+        while i < len(words):
+            chunk = " ".join(words[i:i + size])
+            chunks.append(chunk)
+            i += size
+            size *= 2  # Exponential growth
+        
 
         # 重置流水线
         self._ready_mp3.clear()
@@ -105,6 +111,7 @@ class SpeechManager:
             gTTS(text=text, lang="en", tld="us").save(path)
             with self._ready_lock:
                 self._ready_mp3[idx] = path
+                
         except Exception as e:
             print(f"[TTS ERROR] {e}")
         finally:

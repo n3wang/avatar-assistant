@@ -13,8 +13,8 @@ def main():
     
     # Create managers
     # avatar_manager = AvatarManager()
-    avatar_manager = AvatarManager(character_name="clerk", frames_count=10, scale=.7,
-                                   is_front_only=False, speed_talking=70, speed_idle=100)
+    avatar_manager = AvatarManager(character_name="monopoly_face", frames_count=10, scale=.3,
+                                   is_front_only=True, speed_talking=70, speed_idle=100)
     
     
     speech_manager = SpeechManager(avatar_manager)
