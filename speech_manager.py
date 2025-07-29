@@ -69,7 +69,7 @@ class SpeechManager:
             chunk = " ".join(words[i:i + size])
             chunks.append(chunk)
             i += size
-            size *= 3  # Exponential growth
+            size *= 2  # Exponential growth
         
 
         # 重置流水线
@@ -92,7 +92,7 @@ class SpeechManager:
             temp_path = f"temp_tts_{idx}.mp3"
             path = f"tts_{idx}.mp3"
             gTTS(text=text, lang="en", tld="us").save(temp_path)
-            speed_to_use = 1.3 + min(.6, .2*idx)
+            speed_to_use = 1.3 + min(.4, .2*idx)
             
             audio = AudioSegment.from_file(temp_path, format="mp3")
             
