@@ -59,30 +59,37 @@ class SpeechManager:
         if pipeline_idle and not self.message_queue.empty():
             self.speak(self.message_queue.get())
 
+
     def speak(self, text: str):
         """把整段文本切块、并行生成 MP3，并重置播放管线"""
-        # 拆块
         words = text.split()
         chunks = []
         i = 0
         size = self.chunk_size
+
+        # Define all separators we care about
+        SEPARATORS = r"[.,;:?!]"
+        LAST_SEPARATOR_REGEX = SEPARATORS + r"(?!.*" + SEPARATORS + ")"
+
         while i < len(words):
             end = min(i + size, len(words))
             chunk_words = words[i:end]
             chunk_text = " ".join(chunk_words)
 
-            match = re.search(r'[,\.](?!.*[,\.])', chunk_text)
+            # Look for the last punctuation mark within the current chunk
+            match = re.search(LAST_SEPARATOR_REGEX, chunk_text)
             if match:
-                # Find word index to split on
+                # Count how many spaces before the punctuation to determine word index
                 punct_index = chunk_text[:match.end()].count(" ")
                 end = i + punct_index + 1
-
-            chunk = " ".join(words[i:end])
+                chunk_words = words[i:end]
+            
+            chunk = " ".join(chunk_words)
             chunks.append(chunk)
 
             i = end
             size *= 2
-
+        
         # 重置流水线
         self._ready_mp3.clear()
         self._next_play_idx = 0
