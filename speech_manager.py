@@ -92,7 +92,7 @@ class SpeechManager:
             temp_path = f"temp_tts_{idx}.mp3"
             path = f"tts_{idx}.mp3"
             gTTS(text=text, lang="en", tld="us").save(temp_path)
-            speed_to_use = 1.3 + min(1, .2*idx)
+            speed_to_use = 1.3 + min(5, .2*idx)
             
             audio = AudioSegment.from_file(temp_path, format="mp3")
             
