@@ -73,12 +73,12 @@ class SpeechManager:
         words = text.split()
         chunks = []
         i = 0
-        size = 1
+        size = self.chunk_size
         while i < len(words):
             chunk = " ".join(words[i:i + size])
             chunks.append(chunk)
             i += size
-            size *= 2  # Exponential growth
+            size *= 3  # Exponential growth
         
 
         # 重置流水线
@@ -101,6 +101,8 @@ class SpeechManager:
             temp_path = f"temp_tts_{idx}.mp3"
             path = f"tts_{idx}.mp3"
             gTTS(text=text, lang="en", tld="us").save(temp_path)
+            speed_to_use = 1.5 + min(1, .2*idx)
+            
             audio = AudioSegment.from_file(temp_path, format="mp3")
             print({
                 'duration' : audio.duration_seconds,
@@ -112,7 +114,7 @@ class SpeechManager:
                 'frame_width' : audio.frame_width,
             })
 
-            final = audio.speedup(playback_speed=1.25)
+            final = audio.speedup(playback_speed=speed_to_use)
 
             # export to wav
             final.export(path, format="mp3")
@@ -131,7 +133,7 @@ class SpeechManager:
 
 # ──────────────────────────────── quick demo ──
 if __name__ == "__main__":
-    sm = SpeechManager(chunk_size=10)
+    sm = SpeechManager(chunk_size=5)
     msg = (
         "Este es un mensaje muy largo que debe ser dividido "
         "automáticamente en partes de diez palabras para ser procesado "
