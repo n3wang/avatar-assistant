@@ -25,21 +25,17 @@ def main():
     running = True
     
     while running:
-        # Event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
         
-        # Process incoming messages
         speech_manager.process_queue()
-        
-        # Update and draw
         avatar_manager.update(speech_manager.is_speaking)
         screen.fill((0, 0, 0))
         avatar_manager.draw(screen, speech_manager.is_speaking)
         
         pygame.display.flip()
-        clock.tick(60)  # Consistent 60 FPS
+        clock.tick(60)
     
     pygame.quit()
     sys.exit()

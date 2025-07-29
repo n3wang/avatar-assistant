@@ -4,7 +4,7 @@ import threading
 class AvatarState(Enum):
     IDLE = auto()
     TALKING = auto()
-    THINKING = auto()  # Example of additional state
+    THINKING = auto()
 
 class StateManager:
     def __init__(self):

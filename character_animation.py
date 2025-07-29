@@ -12,7 +12,6 @@ class CharacterAnimation:
         self.current_frame = 0
         self.last_update = 0
         
-        # Load animation sequences
         if is_front_only:
             self.front = self._load_sequence("front")
             self.back = self._load_sequence("front")
