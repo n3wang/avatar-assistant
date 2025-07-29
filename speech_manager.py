@@ -2,6 +2,7 @@ import threading
 import queue
 import time
 import os
+import re
 from gtts import gTTS
 import pygame.mixer
 from pydub import AudioSegment
@@ -36,11 +37,11 @@ class SpeechManager:
         if self.is_speaking:
             return
 
-        finished_idx = self._next_play_idx - 1
-        if finished_idx >= 0:
-            old_path = f"tts_{finished_idx}.mp3"
-            if os.path.exists(old_path):
-                os.remove(old_path)
+        # finished_idx = self._next_play_idx - 1
+        # if finished_idx >= 0:
+        #     old_path = f"tts_{finished_idx}.mp3"
+        #     if os.path.exists(old_path):
+        #         os.remove(old_path)
 
         with self._ready_lock:
             path = self._ready_mp3.pop(self._next_play_idx, None)
@@ -66,11 +67,21 @@ class SpeechManager:
         i = 0
         size = self.chunk_size
         while i < len(words):
-            chunk = " ".join(words[i:i + size])
+            end = min(i + size, len(words))
+            chunk_words = words[i:end]
+            chunk_text = " ".join(chunk_words)
+
+            match = re.search(r'[,\.](?!.*[,\.])', chunk_text)
+            if match:
+                # Find word index to split on
+                punct_index = chunk_text[:match.end()].count(" ")
+                end = i + punct_index + 1
+
+            chunk = " ".join(words[i:end])
             chunks.append(chunk)
-            i += size
-            size *= 2  # Exponential growth
-        
+
+            i = end
+            size *= 2
 
         # 重置流水线
         self._ready_mp3.clear()
@@ -86,42 +97,23 @@ class SpeechManager:
                 args=(idx, chunk),
                 daemon=True,
             ).start()
+            time.sleep(0.1)  # Avoid overwhelming the system with threads
 
     def _tts_worker(self, idx: int, text: str):
         try:
             temp_path = f"temp_tts_{idx}.mp3"
             path = f"tts_{idx}.mp3"
-            gTTS(text=text, lang="en", tld="us").save(temp_path)
-            speed_to_use = 1.3
             
-            audio = AudioSegment.from_file(temp_path, format="mp3")
+            if idx > 0:
+                gTTS(text=text, lang="en", tld="us").save(temp_path)
+                speed_to_use = 1.3
+                audio = AudioSegment.from_file(temp_path, format="mp3")
+                final = audio.speedup(playback_speed=speed_to_use)
+                final.export(path, format="mp3")
+            else:
+                gTTS(text=text, lang="en", tld="us", slow=False).save(path)
             
-            # print({
-            #     'i': idx,
-            #     'duration' : audio.duration_seconds,
-            #     'sample_rate' : audio.frame_rate,
-            #     'channels' : audio.channels,
-            #     'sample_width' : audio.sample_width,
-            #     'frame_count' : audio.frame_count(),
-            #     'frame_rate' : audio.frame_rate,
-            #     'frame_width' : audio.frame_width,
-            # })
-
-            final = audio.speedup(playback_speed=speed_to_use)
-
-            # print({
-            #     'i': idx,
-            #     'modified duration' : final.duration_seconds,
-            #     'sample_rate' : final.frame_rate,
-            #     'channels' : final.channels,
-            #     'sample_width' : final.sample_width,
-            #     'frame_count' : final.frame_count(),
-            #     'frame_rate' : final.frame_rate,
-            #     'frame_width' : final.frame_width,
-            #     'speed': speed_to_use
-            # })
-            print('created audio', idx, 'of', self._total_chunks, 'speed', speed_to_use)
-            final.export(path, format="mp3")
+            print('created audio', idx, 'of', self._total_chunks)
             with self._ready_lock:
                 self._ready_mp3[idx] = path
                 
