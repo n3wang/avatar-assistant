@@ -8,6 +8,8 @@ from constants import WIDTH, HEIGHT
 def main():
     # Initialize pygame
     pygame.init()
+    pygame_icon = pygame.image.load('assets/icon.png')
+    pygame.display.set_icon(pygame_icon)
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("3D Holographic Avatar")
     
