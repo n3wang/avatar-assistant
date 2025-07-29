@@ -84,7 +84,6 @@ class SpeechManager:
             # Look for the last punctuation mark within the current chunk
             match = re.search(LAST_SEPARATOR_REGEX, chunk_text)
             if match:
-                # Count how many spaces before the punctuation to determine word index
                 punct_index = chunk_text[:match.end()].count(" ")
                 end = min(i + punct_index + 1, i + size)
                 # print("end", end,"start", i, "size", size, chunk_text, match.group(0))
@@ -126,7 +125,7 @@ class SpeechManager:
             else:
                 gTTS(text=text, lang="en", tld="us", slow=False).save(path)
             
-            print('created audio', idx, 'of', self._total_chunks)
+            print('created audio', idx + 1, 'of', self._total_chunks)
             with self._ready_lock:
                 self._ready_mp3[idx] = path
                 
