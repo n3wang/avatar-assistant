@@ -92,7 +92,7 @@ class SpeechManager:
             temp_path = f"temp_tts_{idx}.mp3"
             path = f"tts_{idx}.mp3"
             gTTS(text=text, lang="en", tld="us").save(temp_path)
-            speed_to_use = 1.3 + min(.4, .2*idx)
+            speed_to_use = 1.3 + min(.4, .1*idx)
             
             audio = AudioSegment.from_file(temp_path, format="mp3")
             
@@ -120,6 +120,7 @@ class SpeechManager:
             #     'frame_width' : final.frame_width,
             #     'speed': speed_to_use
             # })
+            print('created audio', idx, 'of', self._total_chunks, 'speed', speed_to_use)
             final.export(path, format="mp3")
             with self._ready_lock:
                 self._ready_mp3[idx] = path
