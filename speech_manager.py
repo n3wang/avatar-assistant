@@ -33,17 +33,9 @@ class SpeechManager:
     # ────────────────────────── 公开属性与方法 ──────────────────────────
     @property
     def is_speaking(self) -> bool:
-        """当前是否正在播放语音 (用于驱动动画)"""
         return pygame.mixer.get_busy()
 
     def process_queue(self):
-        """
-        必须在主循环里高频调用  
-        • 如果正在播 -> 直接返回  
-        • 如果上一段播完 -> 清理文件  
-        • 若下一个 MP3 已就绪 -> 立即播放  
-        • 若播放管线空闲并且有新消息 -> start speak()
-        """
         # 1) 正在播
         if self.is_speaking:
             return
@@ -105,10 +97,25 @@ class SpeechManager:
             ).start()
 
     def _tts_worker(self, idx: int, text: str):
-        """后台线程：生成单个 MP3 并放入缓冲区"""
         try:
+            temp_path = f"temp_tts_{idx}.mp3"
             path = f"tts_{idx}.mp3"
-            gTTS(text=text, lang="en", tld="us").save(path)
+            gTTS(text=text, lang="en", tld="us").save(temp_path)
+            audio = AudioSegment.from_file(temp_path, format="mp3")
+            print({
+                'duration' : audio.duration_seconds,
+                'sample_rate' : audio.frame_rate,
+                'channels' : audio.channels,
+                'sample_width' : audio.sample_width,
+                'frame_count' : audio.frame_count(),
+                'frame_rate' : audio.frame_rate,
+                'frame_width' : audio.frame_width,
+            })
+
+            final = audio.speedup(playback_speed=1.25)
+
+            # export to wav
+            final.export(path, format="mp3")
             with self._ready_lock:
                 self._ready_mp3[idx] = path
                 
