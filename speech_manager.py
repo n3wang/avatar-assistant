@@ -37,16 +37,21 @@ class SpeechManager:
         if self.is_speaking:
             return
 
-        # finished_idx = self._next_play_idx - 1
-        # if finished_idx >= 0:
-        #     old_path = f"tts_{finished_idx}.mp3"
-        #     if os.path.exists(old_path):
-        #         os.remove(old_path)
+        finished_idx = self._next_play_idx - 1
+        if finished_idx >= 0:
+            old_path = f"tts_{finished_idx}.mp3"
+            temp_old_path = f"temp_tts_{finished_idx}.mp3"
+            if os.path.exists(old_path):
+                os.remove(old_path)
+
+            if os.path.exists(temp_old_path):
+                os.remove(temp_old_path)
 
         with self._ready_lock:
             path = self._ready_mp3.pop(self._next_play_idx, None)
 
         if path:
+            print(f"Playing audio: {path}")
             pygame.mixer.Sound(path).play()
             self._next_play_idx += 1
             return
@@ -81,7 +86,8 @@ class SpeechManager:
             if match:
                 # Count how many spaces before the punctuation to determine word index
                 punct_index = chunk_text[:match.end()].count(" ")
-                end = i + punct_index + 1
+                end = min(i + punct_index + 1, i + size)
+                # print("end", end,"start", i, "size", size, chunk_text, match.group(0))
                 chunk_words = words[i:end]
             
             chunk = " ".join(chunk_words)
