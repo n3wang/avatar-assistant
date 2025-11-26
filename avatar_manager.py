@@ -78,3 +78,11 @@ class AvatarManager:
         img = pygame.transform.rotate(img, angle)
         rect = img.get_rect(center=pos)
         screen.blit(img, rect)
+
+    def draw_front_centered(self, screen, is_talking, screen_width, screen_height):
+        """Draw only the front-facing avatar centered in the screen"""
+        state = 'talking' if is_talking else 'idle'
+        frame = self.states[state].get_frame("front")
+        center_pos = (screen_width // 2, screen_height // 2)
+        rect = frame.get_rect(center=center_pos)
+        screen.blit(frame, rect)
